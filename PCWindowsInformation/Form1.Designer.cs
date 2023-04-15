@@ -28,55 +28,99 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnGetInformation = new System.Windows.Forms.Button();
-            this.dgwInformation = new System.Windows.Forms.DataGridView();
-            this.cmbManagementClsses = new System.Windows.Forms.ComboBox();
-            ((System.ComponentModel.ISupportInitialize)(this.dgwInformation)).BeginInit();
-            this.SuspendLayout();
+            btnGetInformation = new Button();
+            dgwInformation = new DataGridView();
+            colProperty = new DataGridViewTextBoxColumn();
+            ColValue = new DataGridViewTextBoxColumn();
+            cmbManagementClsses = new ComboBox();
+            label1 = new Label();
+            lblMessage = new Label();
+            ((System.ComponentModel.ISupportInitialize)dgwInformation).BeginInit();
+            SuspendLayout();
             // 
             // btnGetInformation
             // 
-            this.btnGetInformation.Location = new System.Drawing.Point(426, 28);
-            this.btnGetInformation.Name = "btnGetInformation";
-            this.btnGetInformation.Size = new System.Drawing.Size(163, 29);
-            this.btnGetInformation.TabIndex = 0;
-            this.btnGetInformation.Text = "Get Pc Information";
-            this.btnGetInformation.UseVisualStyleBackColor = true;
-            this.btnGetInformation.Click += new System.EventHandler(this.btnGetInformation_Click);
+            btnGetInformation.Location = new Point(70, 66);
+            btnGetInformation.Margin = new Padding(3, 2, 3, 2);
+            btnGetInformation.Name = "btnGetInformation";
+            btnGetInformation.Size = new Size(209, 23);
+            btnGetInformation.TabIndex = 0;
+            btnGetInformation.Text = "Get Hardware Information";
+            btnGetInformation.UseVisualStyleBackColor = true;
+            btnGetInformation.Click += btnGetInformation_Click;
             // 
             // dgwInformation
             // 
-            this.dgwInformation.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgwInformation.Location = new System.Drawing.Point(81, 111);
-            this.dgwInformation.Name = "dgwInformation";
-            this.dgwInformation.RowHeadersWidth = 51;
-            this.dgwInformation.RowTemplate.Height = 29;
-            this.dgwInformation.Size = new System.Drawing.Size(697, 285);
-            this.dgwInformation.TabIndex = 1;
+            dgwInformation.AllowUserToAddRows = false;
+            dgwInformation.AllowUserToDeleteRows = false;
+            dgwInformation.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgwInformation.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgwInformation.Columns.AddRange(new DataGridViewColumn[] { colProperty, ColValue });
+            dgwInformation.Location = new Point(12, 101);
+            dgwInformation.Margin = new Padding(3, 2, 3, 2);
+            dgwInformation.Name = "dgwInformation";
+            dgwInformation.RowHeadersWidth = 51;
+            dgwInformation.RowTemplate.Height = 29;
+            dgwInformation.Size = new Size(610, 214);
+            dgwInformation.TabIndex = 1;
+            // 
+            // colProperty
+            // 
+            colProperty.HeaderText = "Property";
+            colProperty.MinimumWidth = 6;
+            colProperty.Name = "colProperty";
+            // 
+            // ColValue
+            // 
+            ColValue.HeaderText = "Value";
+            ColValue.MinimumWidth = 6;
+            ColValue.Name = "ColValue";
             // 
             // cmbManagementClsses
             // 
-            this.cmbManagementClsses.FormattingEnabled = true;
-            this.cmbManagementClsses.Location = new System.Drawing.Point(81, 28);
-            this.cmbManagementClsses.Name = "cmbManagementClsses";
-            this.cmbManagementClsses.Size = new System.Drawing.Size(305, 28);
-            this.cmbManagementClsses.TabIndex = 2;
-            this.cmbManagementClsses.Visible = false;
+            cmbManagementClsses.FormattingEnabled = true;
+            cmbManagementClsses.Location = new Point(12, 39);
+            cmbManagementClsses.Margin = new Padding(3, 2, 3, 2);
+            cmbManagementClsses.Name = "cmbManagementClsses";
+            cmbManagementClsses.Size = new Size(267, 23);
+            cmbManagementClsses.TabIndex = 2;
+            cmbManagementClsses.Visible = false;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(14, 17);
+            label1.Name = "label1";
+            label1.Size = new Size(73, 15);
+            label1.TabIndex = 3;
+            label1.Text = "WMI Classes";
+            // 
+            // lblMessage
+            // 
+            lblMessage.AutoSize = true;
+            lblMessage.ForeColor = Color.Red;
+            lblMessage.Location = new Point(293, 70);
+            lblMessage.Name = "lblMessage";
+            lblMessage.Size = new Size(0, 15);
+            lblMessage.TabIndex = 4;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(973, 482);
-            this.Controls.Add(this.cmbManagementClsses);
-            this.Controls.Add(this.dgwInformation);
-            this.Controls.Add(this.btnGetInformation);
-            this.Name = "Form1";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dgwInformation)).EndInit();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(639, 325);
+            Controls.Add(lblMessage);
+            Controls.Add(label1);
+            Controls.Add(cmbManagementClsses);
+            Controls.Add(dgwInformation);
+            Controls.Add(btnGetInformation);
+            Margin = new Padding(3, 2, 3, 2);
+            Name = "Form1";
+            Text = "Form1";
+            Load += Form1_Load;
+            ((System.ComponentModel.ISupportInitialize)dgwInformation).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -84,5 +128,9 @@
         private Button btnGetInformation;
         private DataGridView dgwInformation;
         private ComboBox cmbManagementClsses;
+        private DataGridViewTextBoxColumn colProperty;
+        private DataGridViewTextBoxColumn ColValue;
+        private Label label1;
+        private Label lblMessage;
     }
 }

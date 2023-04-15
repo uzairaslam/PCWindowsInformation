@@ -1,9 +1,12 @@
 //using System.man
 
+using PCWindowsInformation.Properties;
 using System.Data;
 using System.Management;
+using System.Reflection;
 using System.Windows.Forms;
 using static System.Formats.Asn1.AsnWriter;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 //using Microsoft.EnterpriseManagement.Common
 
 namespace PCWindowsInformation
@@ -17,65 +20,74 @@ namespace PCWindowsInformation
 
         private void btnGetInformation_Click(object sender, EventArgs e)
         {
-            //string clsName = cmbManagementClsses.SelectedItem.ToString();
-            //if (!string.IsNullOrWhiteSpace(clsName))
-            //{
 
-            //}
-            //Win32_PhysicalMemory
-            //Win32_BaseBoard
-            //Win32_Processor
-
-            ManagementClass managementClass = new ManagementClass(cmbManagementClsses.SelectedItem.ToString());
-
-            ManagementObjectCollection managementObjects = managementClass.GetInstances();
-            foreach (ManagementObject managementObject in managementObjects)
+            dgwInformation.Rows.Clear();
+            try
             {
-                // Retrieve the desired properties
-                //string manufacturer = (string)managementObject["Manufacturer"];
-                //string product = (string)managementObject["Product"];
-                //string serialNumber = (string)managementObject["SerialNumber"];
-                DataTable dt = new DataTable();
-                dt.Columns.Add("Name");
-                dt.Columns.Add("Value");
-                foreach (var property in managementObject.Properties)
+                lblMessage.Text = "Please wait...";
+                btnGetInformation.Enabled = false;
+                cmbManagementClsses.Enabled = false;
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from " + cmbManagementClsses.SelectedValue.ToString().Trim());
+                ManagementObjectCollection Moc = searcher.Get();
+                //foreach (ManagementObject share in searcher.Get())
+                //{
+                foreach (ManagementObject m in Moc)
                 {
-                    var row = dt.NewRow();
-                    row[0] = property.Name;
-                    row[1] = property.Value;
-                    dt.Rows.Add(row);
+                    foreach (PropertyData PC in m.Properties)
+                    {
+                        dgwInformation.Rows.Add(PC.Name, PC.Value);
+                    }
                 }
-                dgwInformation.DataSource = dt;
+                //}
+                if (dgwInformation.Rows.Count < 1)
+                {
+                    lblMessage.Text = "No Properties found";
+                }
+                else lblMessage.Text = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                lblMessage.Text = ex.Message;
+            }
+            finally
+            {
+                btnGetInformation.Enabled = true;
+                cmbManagementClsses.Enabled = true;
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             cmbManagementClsses.Visible = true;
-            cmbManagementClsses.Items.Add("Win32_PhysicalMemory");
-            cmbManagementClsses.Items.Add("Win32_BaseBoard");
-            cmbManagementClsses.Items.Add("Win32_Processor");
-            cmbManagementClsses.Items.Add("Win32_BIOS");
-            cmbManagementClsses.Items.Add("Win32_Battery");
-            cmbManagementClsses.Items.Add("Win32_Fan");
-            cmbManagementClsses.Items.Add("Win32_DiskDrive");
-            //ManagementClass managementClass = new ManagementClass(new ManagementScope("root\\CIMV2"), new ManagementPath(), null);
 
-            //// Get all classes in the CIMV2 namespace
-            //ManagementObjectCollection managementObjects = managementClass.GetSubclasses();
+            var WMIClasses = ReadWMIClasses();
+            if (WMIClasses.Count > 0)
+            {
+                cmbManagementClsses.DataSource = new BindingSource(WMIClasses, null);
+                cmbManagementClsses.DisplayMember = "Value";
+                cmbManagementClsses.ValueMember = "Key";
+            }
+            else
+            {
+                MessageBox.Show("No WMI Classes found");
+            }
+        }
 
-            //// Loop through each ManagementObject in the collection
+        private Dictionary<string, string> ReadWMIClasses()
+        {
+            var response = new Dictionary<string, string>();
+            var WMIClasses = Resources.WMIClassesFile.Split("\r\n").ToList();
+            foreach (string WMIClass in WMIClasses)
+            {
+                var x = SplitOnCamelCase(WMIClass.Split('_')[1]);
+                response.Add(WMIClass, SplitOnCamelCase(WMIClass.Split(new[] { '_' }, 2)[1]));
+            }
+            return response;
+        }
 
-            //foreach (ManagementObject managementObject in managementObjects)
-            //{
-            //    // Retrieve the class name
-            //    string className = managementObject["__CLASS"].ToString();
-
-            //    // Display the class name
-            //    //Console.WriteLine(className);
-            //    if (className.StartsWith("Win32_") || className.StartsWith("MSFT_"))
-            //        cmbManagementClsses.Items.Add(className);
-            //}
+        private string SplitOnCamelCase(string param)
+        {
+            return System.Text.RegularExpressions.Regex.Replace(param, "(?<=[a-z0-9])([A-Z_])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
         }
     }
 }

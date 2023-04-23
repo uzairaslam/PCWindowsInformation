@@ -58,6 +58,7 @@ namespace PCWindowsInformation
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            LoadOverview();
             cmbManagementClsses.Visible = true;
 
             var WMIClasses = ReadWMIClasses();
@@ -88,6 +89,122 @@ namespace PCWindowsInformation
         private string SplitOnCamelCase(string param)
         {
             return System.Text.RegularExpressions.Regex.Replace(param, "(?<=[a-z0-9])([A-Z_])", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
+        }
+
+        private void LoadOverview()
+        {
+            LoadComputerSystem();
+            LoadOS();
+            LoadMemory();
+            LoadProcessor();
+            LoadMotherBoard();
+            LoadVideoCard();
+            LoadMonitors();
+            LoadNetworkCard();
+            LoadHardDrives();
+        }
+
+        private void LoadComputerSystem()
+        {
+
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_ComputerSystem");
+            foreach (ManagementObject mo in searcher.Get())
+            {
+                lblMachine.Text = mo["Model"].ToString();
+            }
+        }
+
+        private void LoadOS()
+        {
+
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
+            foreach (ManagementObject mo in searcher.Get())
+            {
+                lblOS.Text = mo["Caption"].ToString() + " - " + mo["OSArchitecture"].ToString();
+            }
+        }
+
+        private void LoadMemory()
+        {
+
+            long MemSize = 0;
+            long mCap = 0;
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_PhysicalMemory");
+            foreach (ManagementObject mo in searcher.Get())
+            {
+                mCap = Convert.ToInt64(mo["Capacity"]);
+                MemSize += mCap;
+                //lblOS.Text = mo["Caption"].ToString() + " - " + mo["OSArchitecture"].ToString();
+            }
+            MemSize = (MemSize / 1024) / 1024 / 1024;
+            lblMemory.Text =  MemSize.ToString() + " GB";
+        }
+
+        private void LoadProcessor()
+        {
+
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_Processor");
+            foreach (ManagementObject mo in searcher.Get())
+            {
+                lblProcessor.Text = mo["Name"].ToString();
+            }
+        }
+
+        private void LoadMotherBoard()
+        {
+
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_BaseBoard");
+            foreach (ManagementObject mo in searcher.Get())
+            {
+                lblMotherboard.Text = mo["Manufacturer"].ToString() + " - " + mo["Product"].ToString();
+            }
+        }
+
+        private void LoadVideoCard()
+        {
+            lblVideoCard.Text = string.Empty;
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_VideoController");
+            foreach (ManagementObject mo in searcher.Get())
+            {
+                lblVideoCard.Text = lblVideoCard.Text.Length > 0 ? lblVideoCard.Text + @" / " + mo["Caption"].ToString() : mo["Caption"].ToString();
+            }
+        }
+
+        private void LoadMonitors()
+        {
+            lblMonitors.Text = string.Empty;
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_DesktopMonitor");
+            foreach (ManagementObject mo in searcher.Get())
+            {
+                lblMonitors.Text = (lblMonitors.Text.Length > 0 ? (lblMonitors.Text + " / ") : "") + mo["Caption"].ToString();
+            }
+        }
+
+        private void LoadHardDrives()
+        {
+            lblHardDisk.Text = string.Empty;
+
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_DiskDrive");
+            foreach (ManagementObject mo in searcher.Get())
+            {
+                long size = Convert.ToInt64(mo["Size"]) / 1024 / 1024 / 1024;
+                lblHardDisk.Text = (lblHardDisk.Text.Length > 0 ? (lblHardDisk.Text + " / ") : "") + mo["Model"].ToString() + " (" + size + " GB)";
+            }
+        }
+
+        private void LoadNetworkCard()
+        {
+            lblNetworkCard.Text = string.Empty;
+
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_NetworkAdapter");
+            foreach (ManagementObject mo in searcher.Get())
+            {
+                if (mo["MACAddress"] != null && !string.IsNullOrWhiteSpace(mo["MACAddress"].ToString()))
+                {
+                    var x = mo["MACAddress"].ToString();
+                    lblNetworkCard.Text = (lblNetworkCard.Text.Length > 0 ? (lblNetworkCard.Text + " / ") : "") + mo["Name"].ToString();
+                }
+            }
         }
     }
 }

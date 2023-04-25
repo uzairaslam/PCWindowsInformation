@@ -199,7 +199,7 @@ namespace PCWindowsInformation
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_NetworkAdapter");
             foreach (ManagementObject mo in searcher.Get())
             {
-                if (mo["MACAddress"] != null && !string.IsNullOrWhiteSpace(mo["MACAddress"].ToString()))
+                if (mo["MACAddress"] != null && !string.IsNullOrWhiteSpace(mo["MACAddress"].ToString()) && mo["Manufacturer"].ToString() != "Microsoft")
                 {
                     var x = mo["MACAddress"].ToString();
                     lblNetworkCard.Text = (lblNetworkCard.Text.Length > 0 ? (lblNetworkCard.Text + " / ") : "") + mo["Name"].ToString();
